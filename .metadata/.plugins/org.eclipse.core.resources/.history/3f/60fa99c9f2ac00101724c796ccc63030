@@ -1,0 +1,48 @@
+package customer.controller;
+
+import customer.entity.Customer;
+import customer.entity.User;
+import customer.repository.CustomerRepository;
+import customer.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/customers")
+public class CustomerController {
+
+    @Autowired
+    private CustomerRepository customerRepo;
+
+    @Autowired
+    private UserRepository userRepo;
+
+    @GetMapping
+    public List<Customer> getAll(Principal principal) {
+        User user = userRepo.findByUsername(principal.getName()).orElseThrow();
+        return customerRepo.findByUserId(user.getId());
+    }
+
+    @PostMapping
+    public Customer createCustomer(@RequestBody Customer customer, Principal principal) {
+        User user = userRepo.findByUsername(principal.getName()).orElseThrow();
+        customer.setUser(user);
+        return customerRepo.save(customer);
+    }
+    
+    @GetMapping("/api/customers")
+    public List<Customer> getAllCustomers() {
+        return customerRepo.findAll();
+    }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
+        return customerRepo.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+}

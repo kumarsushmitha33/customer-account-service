@@ -1,0 +1,41 @@
+package customer.controller;
+
+import customer.entity.User;
+import customer.repository.UserRepository;
+import customer.security.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("/auth")
+public class AuthController {
+
+    @Autowired
+    private UserRepository userRepo;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @PostMapping("/register")
+    public String register(@RequestBody User user) {
+        if (userRepo.findByUsername(user.getUsername()).isPresent()) {
+            return "User already exists!";
+        }
+        userRepo.save(user);
+        return "User registered successfully!";
+    }
+
+    @PostMapping("/login")
+    public Map<String, String> login(@RequestBody User user) {
+        User existing = userRepo.findByUsername(user.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        if (existing.getPassword().equals(user.getPassword())) {
+            String token = jwtUtil.generateToken(existing.getUsername());
+            return Map.of("token", token);
+        } else {
+            throw new RuntimeException("Invalid credentials");
+        }
+    }
+}

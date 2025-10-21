@@ -1,0 +1,23 @@
+package com.example.pension.account.web;
+import com.example.pension.account.domain.Account;
+import com.example.pension.account.service.AccountService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.math.BigDecimal;
+
+@RestController @RequestMapping("/accounts")
+@RequiredArgsConstructor
+public class AccountController {
+	
+  private final AccountService service;
+  
+  public AccountController(AccountRepository repo) {
+      this.repo = repo;
+  }
+
+  @PostMapping("/{accountNo}/credit")
+  public ResponseEntity<Account> credit(@PathVariable String accountNo, @RequestParam BigDecimal amount){
+    return ResponseEntity.ok(service.credit(accountNo, amount));
+  }
+}

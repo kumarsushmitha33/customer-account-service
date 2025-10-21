@@ -1,0 +1,73 @@
+package account.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import account.client.CustomerClient;
+import account.entity.Account;
+import account.exception.ResourceNotFoundException;
+import account.repository.AccountRepository;
+
+@Service
+public class AccountService {
+
+	@Autowired
+	private AccountRepository repo;
+	
+	@Autowired
+    private CustomerClient customerClient;  // ✅ Injected Spring bean
+	
+	public List<Account> getAccountByCustomer(Long CustomerId) {
+		return repo.findByCustomerId(CustomerId);
+	}
+	
+//	public Account createAccount(Account account) {
+//		return repo.save(account);	
+//	}
+//    public Account createAccount(Account acc, String token) {
+//        boolean valid = customerClient.validateCustomer(acc.getCustomerId(), token); // ✅ instance call
+//        if (!valid) {
+//            throw new RuntimeException("Invalid Customer ID: " + acc.getCustomerId());
+//        }
+//        return repo.save(acc);
+//    }
+//	
+//	public Account updateBalance(Long id, double newBalance) {
+//		Account acc = repo.findById(id)
+//				.orElseThrow (() -> new RuntimeException("Account not found"));
+//		acc.setBalance(newBalance);
+//		return repo.save(acc);
+//	}
+//	
+//	public void deleteAccount(Long id) {
+//		repo.deleteById(id);
+//	}
+	
+	public List<Account> getAllAccounts() {
+	    return repo.findAll();
+	}
+	
+	public Account createAccount(Account acc, String token) {
+        boolean valid = customerClient.validateCustomer(acc.getCustomerId(), token);
+        if (!valid) {
+            throw new IllegalArgumentException("Invalid Customer ID: " + acc.getCustomerId());
+        }
+        return repo.save(acc);
+    }
+
+    public Account updateBalance(Long id, double newBalance) {
+        Account acc = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found for ID: " + id));
+        acc.setBalance(newBalance);
+        return repo.save(acc);
+    }
+
+    public void deleteAccount(Long id) {
+        Account acc = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found for ID: " + id));
+        repo.delete(acc);
+    }
+	
+}

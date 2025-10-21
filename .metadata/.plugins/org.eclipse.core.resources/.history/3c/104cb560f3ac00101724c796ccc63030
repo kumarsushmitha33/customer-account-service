@@ -1,0 +1,27 @@
+package account.client;
+
+import org.springframework.http.*;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+@Service
+public class CustomerClient {
+
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    public boolean validateCustomer(Long id, String token) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", token);  // ✅ Pass JWT
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    "http://localhost:8080/api/customers/" + id,  // ✅ CustomerService URL
+                    HttpMethod.GET, entity, String.class);
+
+            return response.getStatusCode().is2xxSuccessful(); // ✅ 200 OK means valid
+        } catch (Exception e) {
+            return false; // ❌ If exception (invalid token or not found)
+        }
+    }
+}

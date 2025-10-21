@@ -1,0 +1,56 @@
+package com.example.pension.payment.service;
+import com.example.pension.payment.clients.AccountClient;
+import com.example.pension.payment.domain.PensionTransaction;
+import com.example.pension.payment.events.PaymentPostedEvent;
+import com.example.pension.payment.repo.PensionTxnRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.math.BigDecimal;
+import java.util.Optional;
+
+@Service @RequiredArgsConstructor
+public class PensionPaymentService {
+//  private final PensionTxnRepository repo;
+//  private final AccountClient accountClient;
+//  private final KafkaTemplate<String, Object> kafkaTemplate;
+	
+
+	  private final PensionTxnRepository repo;
+	  private final AccountClient accountClient;
+	  private final KafkaTemplate<String, Object> kafkaTemplate;
+
+	  @Autowired
+	  public PensionPaymentService(PensionTxnRepository repo,
+	                               AccountClient accountClient,
+	                               KafkaTemplate<String, Object> kafkaTemplate) {
+	    this.repo = repo;
+	    this.accountClient = accountClient;
+	    this.kafkaTemplate = kafkaTemplate;
+	  }
+
+  @Transactional
+  public PensionTransaction postMonthlyPension(Long customerId, String accountNo, BigDecimal amount, String monthYear, String requestId){
+    if(requestId != null){
+      Optional<PensionTransaction> existing = repo.findByRequestId(requestId);
+      if(existing.isPresent()) return existing.get();
+    }
+    PensionTransaction tx = new PensionTransaction();
+    tx.setCustomerId(customerId); tx.setAccountNumber(accountNo); tx.setAmount(amount);
+    tx.setMonthYear(monthYear); tx.setStatus("INITIATED"); tx.setRequestId(requestId);
+    tx = repo.save(tx);
+
+    ResponseEntity<?> resp = accountClient.credit(accountNo, amount);
+    if(resp.getStatusCode().is2xxSuccessful()){
+      tx.setStatus("POSTED");
+      tx = repo.save(tx);
+      PaymentPostedEvent evt = new PaymentPostedEvent(tx.getId(), customerId, accountNo, amount, monthYear, requestId);
+      kafkaTemplate.send("payment.posted", accountNo, evt);
+    } else {
+      tx.setStatus("FAILED"); tx = repo.save(tx);
+    }
+    return tx;
+  }
+}

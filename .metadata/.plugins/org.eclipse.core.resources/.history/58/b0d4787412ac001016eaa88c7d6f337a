@@ -1,0 +1,96 @@
+import java.math.BigDecimal;
+
+//@Data @NoArgsConstructor @AllArgsConstructor
+//public class PaymentPostedEvent {
+//  private Long txnId; private Long customerId; private String accountNo; private BigDecimal amount; private String monthYear; private String requestId;
+//}
+
+package com.example.pension.payment.event;
+
+
+import java.math.BigDecimal;
+
+public class PaymentPostedEvent {
+
+    private Long transactionId;
+    private Long customerId;
+    private String accountNumber;
+    private BigDecimal amount;
+    private String monthYear;
+    private String requestId;
+
+    // Default constructor (needed for Kafka serialization)
+    public PaymentPostedEvent() {
+    }
+
+    // Parameterized constructor
+    public PaymentPostedEvent(Long transactionId, Long customerId, String accountNumber,
+                              BigDecimal amount, String monthYear, String requestId) {
+        this.transactionId = transactionId;
+        this.customerId = customerId;
+        this.accountNumber = accountNumber;
+        this.amount = amount;
+        this.monthYear = monthYear;
+        this.requestId = requestId;
+    }
+
+    public Long getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(Long transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public String getMonthYear() {
+        return monthYear;
+    }
+
+    public void setMonthYear(String monthYear) {
+        this.monthYear = monthYear;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
+
+    @Override
+    public String toString() {
+        return "PaymentPostedEvent{" +
+                "transactionId=" + transactionId +
+                ", customerId=" + customerId +
+                ", accountNumber='" + accountNumber + '\'' +
+                ", amount=" + amount +
+                ", monthYear='" + monthYear + '\'' +
+                ", requestId='" + requestId + '\'' +
+                '}';
+    }
+}

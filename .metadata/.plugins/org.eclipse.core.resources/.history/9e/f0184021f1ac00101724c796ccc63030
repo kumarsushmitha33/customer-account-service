@@ -1,0 +1,40 @@
+package account.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import account.entity.Account;
+import account.repository.AccountRepository;
+
+@Service
+public class AccountService {
+
+	@Autowired
+	private AccountRepository repo;
+	
+	public List<Account> getAccountByCustomer(Long CustomerId) {
+		return repo.findByCustomerId(CustomerId);
+	}
+	
+	public Account createAccount(Account account) {
+		return repo.save(account);	
+	}
+	
+	public Account updateBalance(Long id, double newBalance) {
+		Account acc = repo.findById(id)
+				.orElseThrow (() -> new RuntimeException("Account not found"));
+		acc.setBalance(newBalance);
+		return repo.save(acc);
+	}
+	
+	public void deleteAccount(Long id) {
+		repo.deleteById(id);
+	}
+	
+	public List<Account> getAllAccounts() {
+	    return repo.findAll();
+	}
+	
+}

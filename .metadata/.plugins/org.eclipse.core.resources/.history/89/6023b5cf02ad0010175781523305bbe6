@@ -1,0 +1,11 @@
+spring.application.name=EurekaServer
+spring.application.name=eureka-server
+server.port=8000
+
+# ✅ Disable self-registration
+eureka.client.register-with-eureka=false
+eureka.client.fetch-registry=false
+
+# Optional (for cleaner logs)
+logging.level.com.netflix.eureka=OFF
+logging.level.com.netflix.discovery=OFF

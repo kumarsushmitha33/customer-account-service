@@ -1,0 +1,21 @@
+package com.example.pension.account.service;
+import com.example.pension.account.domain.Account;
+import com.example.pension.account.repo.AccountRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import javax.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
+
+@Service @RequiredArgsConstructor
+public class AccountService {
+  private final AccountRepository repo;
+
+  @Transactional
+  public Account credit(String accountNo, BigDecimal amount){
+    Account a = repo.findByAccountNumber(accountNo)
+      .orElseThrow(() -> new EntityNotFoundException("Account not found"));
+    a.setBalance(a.getBalance().add(amount));
+    return repo.save(a);
+  }
+}

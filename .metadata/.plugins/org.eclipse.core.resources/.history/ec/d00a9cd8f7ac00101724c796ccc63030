@@ -1,0 +1,52 @@
+package customer.controller;
+
+import customer.entity.Customer;
+import customer.entity.User;
+import customer.repository.CustomerRepository;
+import customer.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/customers")
+public class CustomerController {
+
+    @Autowired
+    private CustomerRepository customerRepo;
+
+    @Autowired
+    private UserRepository userRepo;
+
+    // ✅ Get all customers belonging to the logged-in user
+    @GetMapping
+    public List<Customer> getAll(Principal principal) {
+        User user = userRepo.findByUsername(principal.getName()).orElseThrow();
+        return customerRepo.findByUserId(user.getId());
+    }
+
+    // ✅ Create a customer linked to the logged-in user
+    @PostMapping
+    public Customer createCustomer(@RequestBody Customer customer, Principal principal) {
+        User user = userRepo.findByUsername(principal.getName()).orElseThrow();
+        customer.setUser(user);
+        return customerRepo.save(customer);
+    }
+
+    // ✅ Get ALL customers (for admin or internal service calls)
+    @GetMapping("/all")
+    public List<Customer> getAllCustomers() {
+        return customerRepo.findAll();
+    }
+
+    // ✅ Get a single customer by ID (used by AccountService validation)
+    @GetMapping("/{id}")
+    public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
+        return customerRepo.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+}

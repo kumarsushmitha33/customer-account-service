@@ -1,0 +1,22 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: api-gateway
+  main:
+    allow-bean-definition-overriding: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+zuul:
+  prefix: /api
+  routes:
+    customer-service: /customers/**
+    account-service: /accounts/**
+    payment-service: /payments/**
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

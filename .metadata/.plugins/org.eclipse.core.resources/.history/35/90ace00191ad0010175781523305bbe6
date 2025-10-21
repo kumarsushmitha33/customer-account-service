@@ -1,0 +1,5 @@
+package com.ApiGateway.security;
+
+public class JWTUtil {
+
+}

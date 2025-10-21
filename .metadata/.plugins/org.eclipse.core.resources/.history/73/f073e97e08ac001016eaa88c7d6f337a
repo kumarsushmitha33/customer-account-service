@@ -1,0 +1,8 @@
+package com.example.pension.payment.events;
+import lombok.*;
+import java.math.BigDecimal;
+
+@Data @NoArgsConstructor @AllArgsConstructor
+public class PaymentPostedEvent {
+  private Long txnId; private Long customerId; private String accountNo; private BigDecimal amount; private String monthYear; private String requestId;
+}

@@ -1,0 +1,5 @@
+package customer.kafka;
+
+public class AccountEventConsumer {
+
+}

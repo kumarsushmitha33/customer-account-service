@@ -1,0 +1,24 @@
+spring.application.name=ApiGateway
+
+server.port=1000
+
+# Eureka registration
+eureka.client.service-url.defaultZone=http://localhost:8000/eureka/
+eureka.client.fetch-registry=true
+eureka.client.register-with-eureka=true
+
+# Gateway routes
+spring.cloud.gateway.routes[0].id=customer-service
+spring.cloud.gateway.routes[0].uri=lb://CUSTOMERSERVICE
+spring.cloud.gateway.routes[0].predicates[0]=Path=/api/customers/**
+
+spring.cloud.gateway.routes[1].id=account-service
+spring.cloud.gateway.routes[1].uri=lb://ACCOUNTSERVICE
+spring.cloud.gateway.routes[1].predicates[0]=Path=/api/accounts/**
+
+# Optional logging
+logging.level.org.springframework.cloud.gateway=DEBUG
+logging.level.reactor.netty.http.client=DEBUG
+
+# Attach JWT filter to routes
+spring.cloud.gateway.default-filters[0]=JwtAuthenticationFilter

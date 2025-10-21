@@ -1,0 +1,21 @@
+package account.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import account.entity.Account;
+import account.repository.AccountRepository;
+
+@Service
+public class AccountService {
+
+	@Autowired
+	private AccountRepository repo;
+	
+	public List<Account> getAccountByCustomer(Long CustomerId) {
+		return repo.findByCustomerId(CustomerId);
+	}
+	
+}

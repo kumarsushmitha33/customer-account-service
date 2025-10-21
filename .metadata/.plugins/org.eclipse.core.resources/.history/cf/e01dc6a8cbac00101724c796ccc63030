@@ -1,0 +1,84 @@
+package customer.controller;
+
+import customer.entity.Customer;
+import customer.service.CustomerService;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+package com.example.customer.controller;
+
+import com.example.customer.entity.*;
+import com.example.customer.repository.*;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/customers")
+public class CustomerController {
+
+    private final CustomerRepository customerRepo;
+    private final UserRepository userRepo;
+
+    public CustomerController(CustomerRepository customerRepo, UserRepository userRepo) {
+        this.customerRepo = customerRepo;
+        this.userRepo = userRepo;
+    }
+
+    @GetMapping
+    public List<Customer> getAll(Principal principal) {
+        User user = userRepo.findByUsername(principal.getName()).orElseThrow();
+        return customerRepo.findByUserId(user.getId());
+    }
+
+    @PostMapping
+    public Customer create(@RequestBody Customer customer, Principal principal) {
+        User user = userRepo.findByUsername(principal.getName()).orElseThrow();
+        customer.setUser(user);
+        return customerRepo.save(customer);
+    }
+}
+
+//@RestController
+//@RequestMapping("/api/customers")
+//public class CustomerController {
+//
+//    private final CustomerService service;
+//
+//    public CustomerController(CustomerService service) {
+//        this.service = service;
+//    }
+//
+//    @GetMapping
+//    public List<Customer> getAll() {
+//        return service.getAll();
+//    }
+//
+//    @GetMapping("/{id}")
+//    public Customer getById(@PathVariable Long id) {
+//        return service.getById(id);
+//    }
+//
+//    @PostMapping
+//    public Customer create(@RequestBody Customer customer) {
+//        return service.save(customer);
+//    }
+//
+//    @PutMapping("/{id}")
+//    public Customer update(@PathVariable Long id, @RequestBody Customer customer) {
+//        Customer existing = service.getById(id);
+//        if (existing != null) {
+//            existing.setName(customer.getName());
+//            existing.setEmail(customer.getEmail());
+//            existing.setCity(customer.getCity());
+//            return service.save(existing);
+//        }
+//        return null;
+//    }
+//
+//    @DeleteMapping("/{id}")
+//    public void delete(@PathVariable Long id) {
+//        service.delete(id);
+//    }
+//}

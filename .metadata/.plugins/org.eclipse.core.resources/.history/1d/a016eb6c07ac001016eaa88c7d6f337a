@@ -1,0 +1,25 @@
+package com.example.pension.payment.web;
+import com.example.pension.payment.domain.PensionTransaction;
+import com.example.pension.payment.service.PensionPaymentService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import java.math.BigDecimal;
+
+@RestController @RequestMapping("/payments")
+@RequiredArgsConstructor
+public class PaymentController {
+  private final PensionPaymentService service;
+
+  @PostMapping("/pension")
+  public ResponseEntity<PensionTransaction> pay(@RequestParam Long customerId,
+                                               @RequestParam String accountNo,
+                                               @RequestParam BigDecimal amount,
+                                               @RequestParam String monthYear,
+                                               @RequestHeader(value="Idempotency-Key", required=false) String requestId){
+    return ResponseEntity.status(HttpStatus.CREATED)
+      .body(service.postMonthlyPension(customerId, accountNo, amount, monthYear, requestId));
+  }
+
+  @GetMapping("/health") public String health(){ return "OK"; }
+}

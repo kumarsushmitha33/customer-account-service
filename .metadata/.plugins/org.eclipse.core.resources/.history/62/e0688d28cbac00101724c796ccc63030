@@ -1,0 +1,5 @@
+package customer.config;
+
+public class SecurityConfig {
+
+}

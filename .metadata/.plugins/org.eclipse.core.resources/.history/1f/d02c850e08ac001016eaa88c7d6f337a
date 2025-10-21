@@ -1,0 +1,16 @@
+package com.example.pension.payment.domain;
+import lombok.*;
+import javax.persistence.*;
+import java.math.BigDecimal;
+
+@Entity @Table(name="pension_transactions")
+@Data @NoArgsConstructor
+public class PensionTransaction {
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
+  private Long customerId;
+  private String accountNumber;
+  private BigDecimal amount;
+  private String monthYear;
+  private String status;
+  @Column(unique = true) private String requestId;
+}
